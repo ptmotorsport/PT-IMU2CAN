@@ -7,3 +7,5 @@
 # Build/cache artifacts
 .cache/
 compile_commands.json
+
+.clangd
