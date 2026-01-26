@@ -1,4 +1,4 @@
-#include "gps.h"
+#include <gps.h>
 
 // ---- GPS parser ----
 static TinyGPSPlus gps;

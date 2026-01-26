@@ -1,8 +1,8 @@
 #include <Arduino.h>
+#include <SPI.h>
 #include <Wire.h>
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_BMP280.h>
-#include <SPI.h>
 #include <mcp_can.h>
 
 // ECUMaster CAN IDs

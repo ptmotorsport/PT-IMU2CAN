@@ -2,14 +2,14 @@
 #include <ekf.h>
 
 EKF::EKF() {
-  x_.Fill(0.0f);
-  P_.Fill(0.0f);
-  Q_.Fill(0.0f);
+    x_.Fill(0.0f);
+    P_.Fill(0.0f);
+    Q_.Fill(0.0f);
 
-  for (int i = 0; i < STATE_SIZE; i++) {
-    P_(i,i) = 1.0f;
-    Q_(i,i) = 0.0001f; // tune needed
-  }
+    for (int i = 0; i < STATE_SIZE; i++) {
+      P_(i,i) = 1.0f;
+      Q_(i,i) = 0.0001f; // tune needed
+    }
 }
 
 void EKF::init(const StateVector& x0) {
@@ -21,61 +21,61 @@ void EKF::predict(const Matrix<3,1>& accel,
                   const Matrix<3,1>& gyro,
                   float dt) 
 {
-  // non-linear prediction 
-  x_ = processModel(x_, accel, gyro, dt);
-
-  // linearize
-  Covariance Phi = computePhi(dt);
-
-  // covariance propagation
-  P_ = Phi * P_ * -Phi + Q_;
+    // non-linear prediction 
+    x_ = processModel(x_, accel, gyro, dt);
+  
+    // linearize
+    Covariance Phi = computePhi(dt);
+  
+    // covariance propagation
+    P_ = Phi * P_ * -Phi + Q_;
 }
 
 void EKF::updateGPS(const Matrix<3,1>& gps_pos) 
 {
-  // copy deref to z
-  Matrix<3,1> z = gps_pos;
-  
-  // h(x) = position
-  Matrix<3,1> h;
-  h(0) = x_(0);
-  h(1) = x_(1);
-  h(2) = x_(2);
+    // copy deref to z
+    Matrix<3,1> z = gps_pos;
+ 
+    // h(x) = position
+    Matrix<3,1> h;
+    h(0) = x_(0);
+    h(1) = x_(1);
+    h(2) = x_(2);
+ 
+    // differnce 
+    Matrix<3,1> y = z - h;
 
-  // differnce 
-  Matrix<3,1> y = z - h;
-
-
-  // H matrix (3x15)
-  Matrix<3,STATE_SIZE> H;
-  H.Fill(0.0f);
-
-  H(0,0) = 1.0f;
-  H(1,1) = 1.0f;
-  H(2,2) = 1.0f;
-
-  // Measurement noise
-  Matrix<3,3> R;
-  R.Fill(0.0f);
-  R(0,0) = 2.0f;
-  R(1,1) = 2.0f;
-  R(2,2) = 4.0f;
-
-  // Kalman gain calculation
-  Matrix<3,3> S = H * P_ * ~H + R;
-  Matrix<3,3> S_inv = Invert(S);
-
-  Matrix<STATE_SIZE,3> K = P_ * ~H * S_inv;
-
-  // state update
-  x_ = x_ + K * y;
-
-  // covariance update
-  Matrix<STATE_SIZE, STATE_SIZE> I;
-  I.Fill(0.0f);
-  for (int i = 0; i < STATE_SIZE; i++) I(i,i) = 1.0f;
-
-  P_ = (I - K * H) * P_;
+ 
+    // H matrix (3x15)
+    Matrix<3,STATE_SIZE> H;
+    H.Fill(0.0f);
+ 
+    H(0,0) = 1.0f;
+    H(1,1) = 1.0f;
+    H(2,2) = 1.0f;
+ 
+    // Measurement noise
+    Matrix<3,3> R;
+    R.Fill(0.0f);
+    R(0,0) = 2.0f;
+    R(1,1) = 2.0f;
+    R(2,2) = 4.0f;
+ 
+    // Kalman gain calculation
+    Matrix<3,3> S = H * P_ * ~H + R;
+    Matrix<3,3> S_inv = Invert(S);
+ 
+    Matrix<STATE_SIZE,3> K = P_ * ~H * S_inv;
+ 
+    // state update
+    x_ = x_ + K * y;
+ 
+    // covariance update
+    Matrix<STATE_SIZE, STATE_SIZE> I;
+    I.Fill(0.0f);
+    for (int i = 0; i < STATE_SIZE; i++) I(i,i) = 1.0f;
+ 
+    P_ = (I - K * H) * P_;
 }
 
 
