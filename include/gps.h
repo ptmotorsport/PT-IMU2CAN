@@ -14,4 +14,6 @@ struct GPSSample {
 
 bool initGPS();
 
+bool gpsHasFix();
+
 GPSSample readGPS();

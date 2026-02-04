@@ -1,5 +1,5 @@
-#include <can/config_mod.h>
-#include <can/can_send.h>
+#include <canbus/can_config.h>
+#include <canbus/can_send.h>
 
 // GPS frame index (0–15, cyclic)
 static uint8_t gpsFrameIndex = 0;

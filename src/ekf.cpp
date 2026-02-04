@@ -1,6 +1,9 @@
 #include "ElementStorage.h"
 #include <ekf.h>
 
+// Etended Kalman Filter 
+// What it does: predicts the next INS state with sensor inputs
+// How it works: sensor data is fed into transition matrices, those matrices are then applied to the control INS state to give the next state.
 EKF::EKF() {
     x_.Fill(0.0f);
     P_.Fill(0.0f);

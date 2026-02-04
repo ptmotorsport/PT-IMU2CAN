@@ -12,6 +12,7 @@ constexpr uint16_t ECUMASTER_ID_0x402 = 0x402; // Gyro X/Y
 constexpr uint16_t ECUMASTER_ID_0x403 = 0x403; // Gyro Z + Accels
 constexpr uint16_t ECUMASTER_ID_0x404 = 0x404; // UTC time
 
+
 // ---- Scaling constants ----
 constexpr float RAD_TO_DEG = 57.2957795f;
 constexpr float MS2_TO_G   = 1.0f / 9.81f;

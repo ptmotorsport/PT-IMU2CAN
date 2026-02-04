@@ -12,6 +12,6 @@ struct IMUSample {
 // Initialise in setup 
 // TODO: make it take and address instead to ensure correct imu, ie generalise function into method. (done need to test in main)
 
-bool initIMU_1(uint8_t address);
+bool initIMU(uint8_t address);
 
 IMUSample readIMU(uint8_t address);
