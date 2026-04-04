@@ -1,9 +1,11 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <Adafruit_MPU6050.h>
+#include <Adafruit_ICM20X.h>
+#include <Adafruit_ICM20948.h>
 #include <Adafruit_BMP280.h>
 #include <SPI.h>
 #include <mcp_can.h>
+#include <string.h>
 
 // ECUMaster CAN IDs
 #define ECUMASTER_ID_0x399  0x399  // BMP280 Barometric pressure and temperature
@@ -17,7 +19,7 @@
 #define CAN_CS_PIN 10
 
 // Sensor objects
-Adafruit_MPU6050 mpu;
+Adafruit_ICM20948 icm;
 Adafruit_BMP280 bmp;
 MCP_CAN CAN(CAN_CS_PIN);  // CS pin 10 for SPI
 
@@ -29,17 +31,114 @@ const unsigned long STARTUP_INTERVAL = 100;   // 10Hz during startup (100ms)
 const unsigned long NORMAL_INTERVAL = 40;     // 25Hz normal operation (40ms)
 bool startupComplete = false;
 
+// UART monitoring toggles
+bool monitorIMU = false;
+bool monitorBMP = false;
+bool monitorCAN = false;
+
+// UART command buffer
+char serialCommandBuffer[20];
+uint8_t serialCommandIndex = 0;
+
 // GPS frame index counter
 uint8_t gpsFrameIndex = 0;
 
-// Function to convert float to 16-bit signed integer with scaling
-int16_t floatToInt16(float value, float scale) {
-  return (int16_t)(value * scale);
+void printUARTMenu() {
+  Serial.println(F("\n=== UART Menu ==="));
+  Serial.println(F("help            - Show this menu"));
+  Serial.println(F("status          - Show monitor states"));
+  Serial.println(F("imu on|off      - Toggle IMU monitor output"));
+  Serial.println(F("bmp on|off      - Toggle BMP280 monitor output"));
+  Serial.println(F("can on|off      - Toggle CAN TX monitor output"));
+  Serial.println(F("all on|off      - Toggle all monitor outputs"));
+  Serial.println(F("=================\n"));
 }
 
-// Function to convert float to 16-bit unsigned integer
-uint16_t floatToUInt16(float value) {
-  return (uint16_t)value;
+void printMonitorStatus() {
+  Serial.print(F("IMU monitor: ")); Serial.println(monitorIMU ? F("ON") : F("OFF"));
+  Serial.print(F("BMP monitor: ")); Serial.println(monitorBMP ? F("ON") : F("OFF"));
+  Serial.print(F("CAN monitor: ")); Serial.println(monitorCAN ? F("ON") : F("OFF"));
+}
+
+void applyToggleCommand(bool &target, const char* name, const char* state) {
+  if (strcmp(state, "on") == 0) {
+    target = true;
+    Serial.print(name); Serial.println(F(" monitor enabled"));
+  } else if (strcmp(state, "off") == 0) {
+    target = false;
+    Serial.print(name); Serial.println(F(" monitor disabled"));
+  } else {
+    Serial.print(F("Invalid state for ")); Serial.print(name); Serial.println(F(". Use on/off."));
+  }
+}
+
+void processUARTCommand(char* command) {
+  if (strlen(command) == 0) {
+    return;
+  }
+
+  if (strcmp(command, "help") == 0) {
+    printUARTMenu();
+    return;
+  }
+
+  if (strcmp(command, "status") == 0) {
+    printMonitorStatus();
+    return;
+  }
+
+  char* token = strtok(command, " ");
+  char* state = strtok(NULL, " ");
+
+  if (token == NULL || state == NULL) {
+    Serial.println(F("Unknown/invalid command. Type 'help'."));
+    return;
+  }
+
+  if (strcmp(token, "imu") == 0) {
+    applyToggleCommand(monitorIMU, "IMU", state);
+  } else if (strcmp(token, "bmp") == 0) {
+    applyToggleCommand(monitorBMP, "BMP", state);
+  } else if (strcmp(token, "can") == 0) {
+    applyToggleCommand(monitorCAN, "CAN", state);
+  } else if (strcmp(token, "all") == 0) {
+    if (strcmp(state, "on") == 0) {
+      monitorIMU = true;
+      monitorBMP = true;
+      monitorCAN = true;
+      Serial.println(F("All monitors enabled"));
+    } else if (strcmp(state, "off") == 0) {
+      monitorIMU = false;
+      monitorBMP = false;
+      monitorCAN = false;
+      Serial.println(F("All monitors disabled"));
+    } else {
+      Serial.println(F("Invalid state for all. Use on/off."));
+    }
+  } else {
+    Serial.println(F("Unknown command. Type 'help'."));
+  }
+}
+
+void handleUARTMenu() {
+  while (Serial.available() > 0) {
+    char incoming = (char)Serial.read();
+
+    if (incoming == '\r') {
+      continue;
+    }
+
+    if (incoming == '\n') {
+      serialCommandBuffer[serialCommandIndex] = '\0';
+      processUARTCommand(serialCommandBuffer);
+      serialCommandIndex = 0;
+      continue;
+    }
+
+    if (serialCommandIndex < sizeof(serialCommandBuffer) - 1) {
+      serialCommandBuffer[serialCommandIndex++] = incoming;
+    }
+  }
 }
 
 // Function to send ECUMaster ID 0x400 (Latitude, Longitude) - all zeros
@@ -134,7 +233,7 @@ void sendCANMessage_0x402(float gyroX, float gyroY) {
   canMsg[3] = headingVehicle & 0xFF;         // LSB
   
   // Byte 4-5: X angle rate (°/s, Factor: 0.01, so multiply by 100 for CAN transmission) (BIG ENDIAN)
-  // MPU6050 gives rad/s, convert to deg/s, then scale by 100
+  // ICM-20948 gives rad/s, convert to deg/s, then scale by 100
   // Formula: CAN_value = (rad/s * 57.2958) / 0.01 = (rad/s * 57.2958) * 100
   int16_t xAngleRate = (int16_t)(gyroX * 57.2958 * 100.0);
   canMsg[4] = (xAngleRate >> 8) & 0xFF;  // MSB
@@ -158,7 +257,7 @@ void sendCANMessage_0x403(float gyroZ, float accelX, float accelY, float accelZ)
   canMsg[1] = zAngleRate & 0xFF;         // LSB
   
   // Byte 2-3: X acceleration (g, Factor: 0.01, so multiply by 100 for CAN transmission) (BIG ENDIAN)
-  // MPU6050 gives m/s², convert to g by dividing by 9.81, then scale by 100
+  // ICM-20948 gives m/s², convert to g by dividing by 9.81, then scale by 100
   // Formula: CAN_value = (m/s² / 9.81) / 0.01 = (m/s² / 9.81) * 100
   int16_t xAccel = (int16_t)((accelX / 9.81) * 100.0);
   canMsg[2] = (xAccel >> 8) & 0xFF;  // MSB
@@ -181,35 +280,36 @@ void setup() {
   Serial.begin(115200);
   while (!Serial) delay(10);
   
-  Serial.println("ECUMaster IMU/Baro to CAN Test");
+  Serial.println(F("ECUMaster ICM-20948/BMP280 to CAN Test"));
   
   // Initialize I2C
   Wire.begin();
   
-  // Initialize MPU6050
-  Serial.println("Initializing MPU6050...");
-  if (!mpu.begin()) {
-    Serial.println("Failed to find MPU6050 chip!");
-    while (1) {
-      delay(10);
+  // Initialize ICM-20948
+  Serial.println(F("Initializing ICM-20948..."));
+  if (!icm.begin_I2C()) {
+    if (!icm.begin_I2C(0x68)) {
+      Serial.println(F("Failed to find ICM-20948 chip!"));
+      while (1) {
+        delay(10);
+      }
     }
   }
-  Serial.println("MPU6050 Found!");
-  
-  // Configure MPU6050
-  mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
-  mpu.setGyroRange(MPU6050_RANGE_500_DEG);
-  mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+  Serial.println(F("ICM-20948 Found!"));
+
+  // Configure ICM-20948 ranges
+  icm.setAccelRange(ICM20948_ACCEL_RANGE_8_G);
+  icm.setGyroRange(ICM20948_GYRO_RANGE_500_DPS);
   
   // Initialize BMP280
-  Serial.println("Initializing BMP280...");
+  Serial.println(F("Initializing BMP280..."));
   if (!bmp.begin(0x76)) {  // Try address 0x76 first
     if (!bmp.begin(0x77)) {  // Try address 0x77
-      Serial.println("Failed to find BMP280 chip!");
+      Serial.println(F("Failed to find BMP280 chip!"));
       while (1) delay(10);
     }
   }
-  Serial.println("BMP280 Found!");
+  Serial.println(F("BMP280 Found!"));
   
   // Configure BMP280
   bmp.setSampling(Adafruit_BMP280::MODE_NORMAL,     // Operating Mode
@@ -219,31 +319,36 @@ void setup() {
                   Adafruit_BMP280::STANDBY_MS_500); // Standby time
   
   // Initialize MCP2515
-  Serial.println("Initializing MCP2515...");
+  Serial.println(F("Initializing MCP2515..."));
   
   // Initialize CAN at 1Mbps with 8MHz crystal
   if (CAN.begin(MCP_ANY, CAN_1000KBPS, MCP_8MHZ) == CAN_OK) {
-    Serial.println("MCP2515 Initialized Successfully!");
+    Serial.println(F("MCP2515 Initialized Successfully!"));
   } else {
-    Serial.println("Error Initializing MCP2515...");
+    Serial.println(F("Error Initializing MCP2515..."));
     while (1) delay(10);
   }
   
   // Set to normal mode
   CAN.setMode(MCP_NORMAL);
+
+  printUARTMenu();
+  printMonitorStatus();
   
-  Serial.println("Setup complete! Starting startup sequence...");
+  Serial.println(F("Setup complete! Starting startup sequence..."));
   startupTime = millis();
   delay(100);
 }
 
 void loop() {
+  handleUARTMenu();
+
   unsigned long currentMillis = millis();
   
   // Check if startup sequence is complete
   if (!startupComplete && (currentMillis - startupTime >= STARTUP_DURATION)) {
     startupComplete = true;
-    Serial.println("Startup complete! Switching to 25Hz operation...");
+    Serial.println(F("Startup complete! Switching to 25Hz operation..."));
   }
   
   // Determine current send interval based on startup state
@@ -253,9 +358,9 @@ void loop() {
   if (currentMillis - lastCANSend >= currentInterval) {
     lastCANSend = currentMillis;
     
-    // Read MPU6050 sensor data
+    // Read ICM-20948 sensor data
     sensors_event_t accel, gyro, temp;
-    mpu.getEvent(&accel, &gyro, &temp);
+    icm.getEvent(&accel, &gyro, &temp);
     
     // Read BMP280 sensor data
     float temperature = bmp.readTemperature();
@@ -271,18 +376,28 @@ void loop() {
     sendCANMessage_0x403(gyro.gyro.z, accel.acceleration.x, 
                          accel.acceleration.y, accel.acceleration.z);
     
-    // Print data to Serial for debugging (comment out if not needed)
-    Serial.print("Gyro X: "); Serial.print(gyro.gyro.x * 57.2958); Serial.print(" °/s, ");
-    Serial.print("Y: "); Serial.print(gyro.gyro.y * 57.2958); Serial.print(" °/s, ");
-    Serial.print("Z: "); Serial.print(gyro.gyro.z * 57.2958); Serial.println(" °/s");
-    
-    Serial.print("Accel X: "); Serial.print(accel.acceleration.x / 9.81); Serial.print(" g, ");
-    Serial.print("Y: "); Serial.print(accel.acceleration.y / 9.81); Serial.print(" g, ");
-    Serial.print("Z: "); Serial.print(accel.acceleration.z / 9.81); Serial.println(" g");
-    
-    Serial.print("Temp: "); Serial.print(temperature); Serial.print(" °C, ");
-    Serial.print("Pressure: "); Serial.print(pressure / 100.0); Serial.print(" hPa, ");
-    Serial.print("Altitude: "); Serial.print(altitude); Serial.println(" m");
-    Serial.println();
+    if (monitorIMU) {
+      Serial.print(F("Gyro X: ")); Serial.print(gyro.gyro.x * 57.2958); Serial.print(F(" deg/s, "));
+      Serial.print(F("Y: ")); Serial.print(gyro.gyro.y * 57.2958); Serial.print(F(" deg/s, "));
+      Serial.print(F("Z: ")); Serial.print(gyro.gyro.z * 57.2958); Serial.println(F(" deg/s"));
+
+      Serial.print(F("Accel X: ")); Serial.print(accel.acceleration.x / 9.81); Serial.print(F(" g, "));
+      Serial.print(F("Y: ")); Serial.print(accel.acceleration.y / 9.81); Serial.print(F(" g, "));
+      Serial.print(F("Z: ")); Serial.print(accel.acceleration.z / 9.81); Serial.println(F(" g"));
+    }
+
+    if (monitorBMP) {
+      Serial.print(F("Temp: ")); Serial.print(temperature); Serial.print(F(" C, "));
+      Serial.print(F("Pressure: ")); Serial.print(pressure / 100.0); Serial.print(F(" hPa, "));
+      Serial.print(F("Altitude: ")); Serial.print(altitude); Serial.println(F(" m"));
+    }
+
+    if (monitorCAN) {
+      Serial.println(F("CAN TX: 0x399 0x400 0x404 0x401 0x402 0x403"));
+    }
+
+    if (monitorIMU || monitorBMP || monitorCAN) {
+      Serial.println();
+    }
   }
 }
