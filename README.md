@@ -25,22 +25,25 @@ Solution: we offer a low barrier to entry system that does well enough at the ba
 
 ### Plug & Play infrastruture:
 
+Standalone:
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '18px', 'lineColor': '#e94560', 'mainBkg': '#f0f4f8', 'nodeBorder': '#aaaaaa', 'textColor': '#222222', 'clusterBkg': 'transparent', 'clusterBorder': 'transparent'}, 'flowchart': {'curve': 'basis'}}}%%
-flowchart TD
-    subgraph Standalone
-        A(Mount module) --> B(Power on)
-        B --> C(Initialise sensors)
-        C --> D(GPS Zeroing)
-        D --> E(Data logging activated)
-    end
-    subgraph Integrated
-        F(Install module) --> G(Power on vehicle)
-        G --> H(Initialise sensors)
-        H --> I(Button press GPS zeroing)
-        I --> J(Data logging activated)
-        J --> K(Button-press lap start, sets virtual gate)
-    end
+flowchart LR
+
+A(Mount module) --> B(Power on system)
+B --> C(Initialise sensors)
+C --> D(GPS zeroing)
+D --> E(Data logging active)
+```
+
+Integrated:
+```mermaid
+flowchart LR
+
+F(Install module) --> G(Power on vehicle)
+G --> H(Initialise sensors)
+H --> I(Button GPS zeroing)
+I --> J(Data logging active)
+J --> K(Lap start virtual gate')
 ```
 # Tech Stack
 
@@ -94,71 +97,83 @@ This design keeps execution deterministic: IMU fusion → EKF predict/update →
 Overall, the decision prioritises clarity and reliability over scalability, with room to parallelise later if computational load increases.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '24px', 'lineColor': '#e94560', 'mainBkg': '#f0f4f8', 'nodeBorder': '#aaaaaa', 'textColor': '#222222', 'background': '#f8fafc', 'clusterBkg': '#f1f5f9'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {
+    'fontSize': '24px',
+    'lineColor': '#e94560',
+    'mainBkg': '#f0f4f8',
+    'nodeBorder': '#aaaaaa',
+    'textColor': '#222222',
+    'background': '#f8fafc',
+    'clusterBkg': '#f1f5f9'
+}}}%%
 stateDiagram-v2
 
-    [*] --> FuseIMUs
+    [*] --> IMU_Fusion
 
-    state FuseIMUs {
+    IMU_Fusion --> EKF_Predict
+
+    state IMU_Fusion {
         direction TB
-        [*] --> IMUFusion
-        IMUFusion --> EKFPredict
-        IMUFusion : IMU fusion — fuseIMUs(imu1, imu2)
+        [*] --> Fuse
+        Fuse : fuseIMUs(imu1, imu2)
+        Fuse --> [*]
     }
 
-    EKFPredict --> EKFUpdate
+    EKF_Predict --> EKF_Update
 
-    state EKFUpdate {
+    state EKF_Predict {
         direction TB
-        [*] --> PredictStep
-        PredictStep --> UpdateStep
-        UpdateStep --> [*]
-
-        PredictStep : EKF predict — accel + gyro + dt
-        UpdateStep : EKF update — GPS correction (if valid fix)
+        [*] --> Predict
+        Predict : accel + gyro + dt
+        Predict --> [*]
     }
 
-    EKFUpdate --> Snapshot
+    state EKF_Update {
+        direction TB
+        [*] --> Update_Check
+        Update_Check --> GPS_Update : GPS valid fix
+        Update_Check --> [*] : no fix
+
+        GPS_Update : EKF update with GPS
+        GPS_Update --> [*]
+    }
+
+    EKF_Update --> Snapshot
 
     state Snapshot {
         direction TB
-        [*] --> ExtractState
-        ExtractState --> DebugSerial
-        DebugSerial --> CANDispatch
-        CANDispatch --> [*]
+        [*] --> Extract_State
+        Extract_State --> Debug
+        Debug --> CAN_Prepare
+        CAN_Prepare --> [*]
 
-        ExtractState : Extract INS_State snapshot
-        DebugSerial : Debug output (10 Hz throttled)
-        CANDispatch : Prepare CAN frames
+        Extract_State : INS_State snapshot
+        Debug : serial debug (10 Hz)
+        CAN_Prepare : prepare CAN frames
     }
 
-    CANDispatch --> CAN_TX
+    Snapshot --> CAN_TX
 
     state CAN_TX {
         direction TB
-        [*] --> LatLng
-        LatLng --> GPSInfo
-        GPSInfo --> GyroXY
-        GyroXY --> GyroZAccel
-        GyroZAccel --> UTCTime
-        UTCTime --> [*]
+        [*] --> Send_LatLng
+        Send_LatLng --> Send_GPS
+        Send_GPS --> Send_GyroXY
+        Send_GyroXY --> Send_GyroZAccel
+        Send_GyroZAccel --> Send_UTC
+        Send_UTC --> [*]
 
-        LatLng : 0x400 — Lat/Lng (EKF PX/PY)
-        GPSInfo : 0x401 — Altitude + GPS status
-        GyroXY : 0x402 — Roll/Pitch rates
-        GyroZAccel : 0x403 — Z gyro + accel (IMU corrected)
-        UTCTime : 0x404 — UTC timestamp
+        Send_LatLng : 0x400
+        Send_GPS : 0x401
+        Send_GyroXY : 0x402
+        Send_GyroZAccel : 0x403
+        Send_UTC : 0x404
     }
 
-    CAN_TX --> FuseIMUs : next cycle
+    CAN_TX --> IMU_Fusion : next cycle
 
-    classDef ekfBox fill:#dbeafe,stroke:#3b82f6,stroke-width:1.5px,color:#1e3a5f
-    classDef logBox fill:#e8f5f0,stroke:#2d8a6a,stroke-width:1.5px,color:#064e3b
-    classDef canBox fill:#fff7ed,stroke:#f97316,stroke-width:1.5px,color:#7c2d12
-
-    class FuseIMUs,EKFPredict,EKFUpdate ekfBox
-    class Snapshot,DebugSerial logBox
-    class CAN_TX,LatLng,GPSInfo,GyroXY,GyroZAccel,UTCTime canBox
+    classDef predictBox fill:#dbeafe,stroke:#3b82f6,stroke-width:1.5px,color:#1e3a5f
+    classDef updateBox fill:#e8f5f0,stroke:#2d8a6a,stroke-width:1.5px,color:#064e3b
 ```
 
 
