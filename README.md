@@ -59,7 +59,7 @@ Maintaining a consistent world model via an Extended Kalman Filter provides the 
 The EKF acts as the central estimator, continuously predicting motion from inertial inputs and correcting it with GPS updates when valid fixes are available. This balance between prediction and correction ensures smooth, real-time state estimation suitable for vehicle tracking and control.
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '24px', 'lineColor': '#e94560', 'mainBkg': '#f0f4f8', 'nodeBorder': '#aaaaaa', 'textColor': '#222222', 'background': '#f8fafc', 'clusterBkg': '#f1f5f9'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '12px', 'lineColor': '#e94560', 'mainBkg': '#f0f4f8', 'nodeBorder': '#aaaaaa', 'textColor': '#222222', 'background': '#f8fafc', 'clusterBkg': '#f1f5f9'}}}%%
 stateDiagram-v2
     [*] --> Initialise
     Initialise --> Predict : first IMU(fused) sample arrives
@@ -98,7 +98,7 @@ Overall, the decision prioritises clarity and reliability over scalability, with
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {
-    'fontSize': '24px',
+    'fontSize': '12px',
     'lineColor': '#e94560',
     'mainBkg': '#f0f4f8',
     'nodeBorder': '#aaaaaa',
