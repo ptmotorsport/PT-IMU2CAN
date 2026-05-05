@@ -5,7 +5,7 @@
 static uint8_t gpsFrameIndex = 0;
 
 bool canInit(MCP_CAN& can) {
-    if (can.begin(MCP_ANY, CAN_1000KBPS, MCP_8MHZ) != CAN_OK) {
+    if (can.begin(MCP_ANY, CAN_1000KBPS, MCP_8MHZ) != CAN_OK) {\
         return false;
     }
     can.setMode(MCP_NORMAL);
@@ -40,6 +40,26 @@ void canSendBaroTemp(MCP_CAN &can, float pressurePa, float temperatureC) {
 // 0x400 - Lat / Long (zeroed)
 void canSendLatLngZero(MCP_CAN& can) {
     unsigned char canMsg[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    can.sendMsgBuf(ECUMASTER_ID_0x400, 0, 8, canMsg);
+}
+
+// 0x400 - Lat / Long
+void canSendLatLng(MCP_CAN& can, float lat, float lng) {
+    // ECUMaster expects lat/lng as int32 scaled by 1e7 (degrees * 10,000,000)
+    int32_t latInt = (int32_t)(lat * 1e7f);
+    int32_t lngInt = (int32_t)(lng * 1e7f);
+
+    unsigned char canMsg[8];
+    // Lat in bytes 0-3, lng in bytes 4-7, big-endian
+    canMsg[0] = (latInt >> 24) & 0xFF;
+    canMsg[1] = (latInt >> 16) & 0xFF;
+    canMsg[2] = (latInt >>  8) & 0xFF;
+    canMsg[3] = (latInt >>  0) & 0xFF;
+    canMsg[4] = (lngInt >> 24) & 0xFF;
+    canMsg[5] = (lngInt >> 16) & 0xFF;
+    canMsg[6] = (lngInt >>  8) & 0xFF;
+    canMsg[7] = (lngInt >>  0) & 0xFF;
+
     can.sendMsgBuf(ECUMASTER_ID_0x400, 0, 8, canMsg);
 }
 

@@ -6,7 +6,7 @@
 
 #define GPS_SERIAL          Serial1   // hardware UART
 #define GPS_BAUD            9600
-#define GPS_INIT_TIMEOUT    1500
+#define GPS_INIT_TIMEOUT    10000
 
 // ---- GPS parser ----
 static TinyGPSPlus gps;
@@ -27,6 +27,7 @@ bool initGPS()
     while (millis() - start < GPS_INIT_TIMEOUT) {
         while (GPS_SERIAL.available()) {
             char c = GPS_SERIAL.read();
+            Serial.write(c);  // dump raw data
             gps.encode(c);
             dataDetected = true;
         }

@@ -13,6 +13,8 @@ void canSendBaroTemp(MCP_CAN& can, float pressurePa, float temperatureC);
 
 // 0x400: Latitude / Longitude (currently zeroed)
 void canSendLatLngZero(MCP_CAN& can);
+// 0x400: Latitude / Longitude in degrees (float)
+void canSendLatLng(MCP_CAN& can, float lat, float lng);
 
 // 0x401: Speed, altitude, GPS info
 void canSendGPSInfo(MCP_CAN& can, float altitudeMeters);
