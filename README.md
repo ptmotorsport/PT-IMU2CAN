@@ -182,17 +182,17 @@ stateDiagram-v2
 
 
 # Development Guide
-1) Clone repository
-2) Edit the `platformio.init` file to inlcude your specific dev board (ensure chip specs are similar)
+1) Clone repository.
+2) Edit the `platformio.init` file to inlcude your specific dev board (ensure chip specs are similar).
 3) Run `pio -run -e <board name> -t compiledb` to compile code and generate commands for your language server.
 
 4) Flash board via usb with `pio run -t upload`
 
-5) While still connected run `pio device monitor` to look at dbg messages in serial out
+5) While still connected run `pio device monitor` to look at dbg messages in serial out.
 
-6) Start by running it across a clearly marked section of space (car park etc). take note of the general/average values. Focus intial efforts on Tuning the Filter with hard coded values.
+6) Start by running it across a clearly marked section of space (car park etc). Take note of the general/average values. Focus intial efforts on Tuning the Filter with hard coded values.
 
-note: debug mode is activated with a flag in `src/main.cpp` throttled to 10hz for realtime human readability
+note: debug mode is activated with a flag in `src/main.cpp` throttled to 10hz for realtime human readability.
 
 ## Kalman Filter Tuning Guide 
 
