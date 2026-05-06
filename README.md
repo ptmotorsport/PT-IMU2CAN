@@ -7,7 +7,8 @@ These products often have the price tag to match.
 
 ### Target: 
 Our product is tailored towards beginning race teams or track club events. \
-Solution: we offer a low barrier to entry system that does well enough at the base level but can be greatly extended.
+### Solution: 
+We offer a low barrier to entry system that does well enough at the base level but can be greatly extended.
 
 ### Product goals:
 - match hardware level accuracy
