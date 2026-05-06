@@ -11,16 +11,16 @@ Our product is tailored towards beginning race teams or track club events.
 We offer a low barrier to entry system that does well enough at the base level but can be greatly extended.
 
 ### Product goals:
-- match hardware level accuracy
-- offer wide compatibility accross different Ecu brands as potential cost of 'seamless integration'
-- alternative standalone configuration (where ecu limiations restrict integration)
-- lower cost (offered as dev kit)
+- Match hardware level accuracy
+- Offer wide compatibility accross different Ecu brands as potential cost of 'seamless integration'
+- Alternative standalone configuration (where ecu limiations restrict integration)
+- Lower cost (offered as dev kit)
 
 ### Product Features:
-- 2x Discrete 6 Axis IMU for industry level accuracy coupled with dynamic noise filtering.
-- 25hz GPS module for class leading precision.
-- CANbus interface for direct to ECU data logging and sensor comparison.
-- discrete altimeter and thermometer for acurate environmental logging.
+- 2x Discrete 6 Axis IMU for industry level accuracy coupled with dynamic noise filtering
+- 25hz GPS module for class leading precision
+- CANbus interface for direct to ECU data logging and sensor comparison
+- Discrete altimeter and thermometer for acurate environmental logging
 - Lap timer (1.0 release)
 
 
@@ -44,7 +44,7 @@ F(Install module) --> G(Power on vehicle)
 G --> H(Initialise sensors)
 H --> I(Button GPS zeroing)
 I --> J(Data logging active)
-J --> K(Lap start virtual gate')
+J --> K(Lap start 'virtual gate')
 ```
 # Tech Stack
 
@@ -190,7 +190,7 @@ stateDiagram-v2
 
 5) While still connected run `pio device monitor` to look at dbg messages in serial out
 
-6) Start by running it across a clearly marked section of spece (car park etc). take note of the general/average values. Focus intial efforts on Tuning the Filter with hard coded values.
+6) Start by running it across a clearly marked section of space (car park etc). take note of the general/average values. Focus intial efforts on Tuning the Filter with hard coded values.
 
 note: debug mode is activated with a flag in `src/main.cpp` throttled to 10hz for realtime human readability
 
