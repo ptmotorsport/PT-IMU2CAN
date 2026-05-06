@@ -6,7 +6,7 @@ Comercial systems offered by leaders in the field offer high precision, low nois
 These products often have the price tag to match.
 
 ### Target: 
-Our product is tailored towards begining race teams or track club events. \
+Our product is tailored towards beginning race teams or track club events. \
 Solution: we offer a low barrier to entry system that does well enough at the base level but can be greatly extended.
 
 ### Product goals:
