@@ -20,7 +20,7 @@ We offer a low barrier to entry system that does well enough at the base level b
 - 2x Discrete 6 Axis IMU for industry level accuracy coupled with dynamic noise filtering
 - 25hz GPS module for class leading precision
 - CANbus interface for direct to ECU data logging and sensor comparison
-- Discrete altimeter and thermometer for acurate environmental logging
+- Discrete altimeter and thermometer for accurate environmental logging
 - Lap timer (1.0 release)
 
 
