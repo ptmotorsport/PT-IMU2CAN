@@ -12,7 +12,7 @@ We offer a low barrier to entry system that does well enough at the base level b
 
 ### Product goals:
 - Match hardware level accuracy
-- Offer wide compatibility accross different Ecu brands as potential cost of 'seamless integration'
+- Offer wide compatibility across different Ecu brands at potential cost of 'seamless integration'
 - Alternative standalone configuration (where ecu limiations restrict integration)
 - Lower cost (offered as dev kit)
 
