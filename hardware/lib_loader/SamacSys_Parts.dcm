@@ -1,0 +1,15 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP NE555DR
+D Single Precision Timer
+K
+F http://www.ti.com/lit/ds/symlink/ne555.pdf
+$ENDCMP
+#
+$CMP NEO-M9V-20B
+D GPS Modules
+K
+F https://content.u-blox.com/sites/default/files/NEO-M9V-20B_DataSheet_UBX-21029781.pdf
+$ENDCMP
+#
+#End Doc Library
