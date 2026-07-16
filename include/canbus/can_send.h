@@ -11,6 +11,11 @@ bool canInit(MCP_CAN& can);
 // 0x399: Barometric pressure + temperature
 void canSendBaroTemp(MCP_CAN& can, float pressurePa, float temperatureC);
 
+void nedToLatLng(float originLat, float originLng,
+                 float northM,    float eastM,
+                 float& latOut,   float& lngOut);
+
+
 // 0x400: Latitude / Longitude (currently zeroed)
 void canSendLatLngZero(MCP_CAN& can);
 // 0x400: Latitude / Longitude in degrees (float)

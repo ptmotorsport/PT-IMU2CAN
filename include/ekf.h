@@ -25,6 +25,8 @@ public:
 
     void init (const StateVector& x0);
 
+    void getOrigin(float& lat, float& lng) const;
+
     // Call once before first predict(), with your first valid GPS fix
     void setOrigin(float lat0_deg, float lng0_deg);
 

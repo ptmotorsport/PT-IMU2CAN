@@ -31,6 +31,10 @@ void EKF::init(const StateVector& x0) {
     x_ = x0;
 }
 
+void EKF::getOrigin(float& lat, float& lng) const {
+    lat = origin_lat_deg_;
+    lng = origin_lng_deg_;
+}
 
 void EKF::setOrigin(float lat0_deg, float lng0_deg) {
     origin_lat_deg_ = lat0_deg;

@@ -43,6 +43,18 @@ void canSendLatLngZero(MCP_CAN& can) {
     can.sendMsgBuf(ECUMASTER_ID_0x400, 0, 8, canMsg);
 }
 
+void nedToLatLng(float originLat, float originLng,
+                 float northM,    float eastM,
+                 float& latOut,   float& lngOut)
+{
+    const float EARTH_R_M = 6378137.0f;
+    float cosLat = cosf(originLat * DEG_TO_RAD);
+    float dLat = northM / (DEG_TO_RAD * EARTH_R_M);
+    float dLng = eastM  / (DEG_TO_RAD * EARTH_R_M * cosLat);
+    latOut = originLat + dLat;
+    lngOut = originLng + dLng;
+}
+
 // 0x400 - Lat / Long
 void canSendLatLng(MCP_CAN& can, float lat, float lng) {
     // ECUMaster expects lat/lng as int32 scaled by 1e7 (degrees * 10,000,000)

@@ -40,6 +40,8 @@ bool startupComplete = false;
 // Extended Kalman filter instance 
 EKF ekf;
 
+bool originSet = false;
+
 void setup() 
 {
     DBG_BEGIN(115200);
@@ -86,7 +88,7 @@ void setup()
     StateVector x0;
     x0.Fill(0.0f);      // start at origin, zero velocity, zero attitude
     ekf.init(x0);
-    
+
     Serial.println("Setup complete! Starting startup sequence...");
     startupTime = millis();
     delay(100);
@@ -128,6 +130,17 @@ void loop()
 
     // ---- Sensor reads ----
     GPSSample gps_s = readGPS();
+    
+    // Set origin once on first valid fix
+    if (!originSet && gps_s.valid) {
+        ekf.setOrigin(gps_s.position(0), gps_s.position(1));
+        originSet = true;
+        Serial.print("Origin set: ");
+        Serial.print(gps_s.position(0), 7);
+        Serial.print(", ");
+        Serial.println(gps_s.position(1), 7);
+    }
+
     IMUSample imu1  = readIMU(IMU_1);
     IMUSample imu2  = readIMU(IMU_2);
 
@@ -201,9 +214,19 @@ void loop()
      * - Send to ECU MASTER over CAN via defined methods in prefered order
      */
 
+    if (originSet) {
+    float lat_deg, lng_deg;
+    float originLat, originLng;
+    ekf.getOrigin(originLat, originLng);
+    nedToLatLng(
+        originLat, originLng,
+        INS_State(EKF::PX), INS_State(EKF::PY),
+        lat_deg, lng_deg
+    );
 
     // 0x400: lat/lng from EKF position states
-    canSendLatLng(CAN, INS_State(EKF::PX), INS_State(EKF::PY));
+    canSendLatLng(CAN, lat_deg, lng_deg);
+    }
 
     // 0x401: altitude + GPS info
     canSendGPSInfo(CAN, INS_State(EKF::PZ));
@@ -224,3 +247,4 @@ void loop()
     // 0x404: UTC stub
     canSendUTCTime(CAN);
 }
+
