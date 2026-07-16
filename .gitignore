@@ -19,6 +19,7 @@ main_backup.txt
 _autosave-*
 *.cback
 *.sback
+.history/
 
 # Output directories (Gerbers and manufacturing)
 /plots/
