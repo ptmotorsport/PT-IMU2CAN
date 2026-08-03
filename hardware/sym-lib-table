@@ -1,5 +1,5 @@
 (sym_lib_table
 	(version 7)
 	(lib (name "Project_Library") (type "KiCad") (uri "${KIPRJMOD}/Project_Library.kicad_sym") (options "") (descr ""))
-	(lib (name "Lib_Loader") (type "KiCad") (uri "${KIPRJMOD}/lib_loader") (options "") (descr ""))
+	(lib (name "Lib_Loader") (type "KiCad") (uri "/home/soap/Projects/PT-IMU2CAN/hardware/lib_loader/Samacsys.kicad_sym") (options "") (descr ""))
 )

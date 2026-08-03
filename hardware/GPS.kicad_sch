@@ -8069,7 +8069,7 @@
 	)
 	(symbol
 		(lib_id "Loaded_Libraries:NEO-M9V-20B")
-		(at 120.65 144.78 0)
+		(at 120.65 143.51 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -8080,7 +8080,7 @@
 		(fields_autoplaced yes)
 		(uuid "aa0b01c3-b2f9-43aa-899f-9ce2f7bfdd02")
 		(property "Reference" "IC4"
-			(at 146.05 137.16 0)
+			(at 146.05 135.89 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -8090,7 +8090,7 @@
 			)
 		)
 		(property "Value" "NEO-M9V-20B"
-			(at 146.05 139.7 0)
+			(at 146.05 138.43 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -8100,7 +8100,7 @@
 			)
 		)
 		(property "Footprint" "NEOM9V20B"
-			(at 167.64 239.7 0)
+			(at 167.64 238.43 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8112,7 +8112,7 @@
 			)
 		)
 		(property "Datasheet" "https://content.u-blox.com/sites/default/files/NEO-M9V-20B_DataSheet_UBX-21029781.pdf"
-			(at 167.64 339.7 0)
+			(at 167.64 338.43 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8124,7 +8124,7 @@
 			)
 		)
 		(property "Description" "GPS Modules"
-			(at 120.65 144.78 0)
+			(at 120.65 143.51 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8135,7 +8135,7 @@
 			)
 		)
 		(property "Height" "2.6"
-			(at 167.64 539.7 0)
+			(at 167.64 538.43 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8147,7 +8147,7 @@
 			)
 		)
 		(property "Mouser Part Number" "377-NEO-M9V-20B"
-			(at 167.64 639.7 0)
+			(at 167.64 638.43 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8159,7 +8159,7 @@
 			)
 		)
 		(property "Mouser Price/Stock" "https://www.mouser.co.uk/ProductDetail/u-blox/NEO-M9V-20B?qs=TCDPyi3sCW0wo5Ra8BoqwQ%3D%3D"
-			(at 167.64 739.7 0)
+			(at 167.64 738.43 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8171,7 +8171,7 @@
 			)
 		)
 		(property "Manufacturer_Name" "u-blox"
-			(at 167.64 839.7 0)
+			(at 167.64 838.43 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8183,7 +8183,7 @@
 			)
 		)
 		(property "Manufacturer_Part_Number" "NEO-M9V-20B"
-			(at 167.64 939.7 0)
+			(at 167.64 938.43 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
