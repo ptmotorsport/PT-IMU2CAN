@@ -853,7 +853,7 @@
         "uuid": "7abec38e-2a6a-4c7d-a187-5990bacce22b"
       }
     ],
-    "used_designators": "D1-18,U1-13,SDA1,SW1,3v1,3v3,C1-33,LED1-2,TP1-4,JP1-19,R1-78,IC1-4,#PWR1-126,J1,J4,FB1-2,L1-2,Q1-4,SCL1",
+    "used_designators": "#PWR1-132,#PWR134-141,FB1-2,L1-2,R1-82,LED1-2,TP1-4,JP1-20,SW1,SCL1,IC1-5,J1,J4,C1-41,3v1,3v3,U1-14,SDA1,D1-18,Q1-4",
     "variants": []
   },
   "sheets": [
@@ -896,6 +896,14 @@
     [
       "acd072a1-e763-440c-9c52-94699060df1e",
       "Connectors"
+    ],
+    [
+      "b7c352ec-1a51-4e61-99d9-18bba6399c39",
+      "Magnetometer"
+    ],
+    [
+      "77197f7c-4a7a-457a-b8d8-aa32ab1c3f27",
+      "Altimeter"
     ]
   ],
   "text_variables": {},
