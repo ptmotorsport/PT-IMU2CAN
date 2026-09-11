@@ -1066,6 +1066,16 @@
 	)
 	(wire
 		(pts
+			(xy 104.14 49.53) (xy 87.63 49.53)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "16ca9873-5a4d-4fa0-b53d-1349677e8189")
+	)
+	(wire
+		(pts
 			(xy 25.4 67.31) (xy 52.07 67.31)
 		)
 		(stroke
@@ -1143,6 +1153,16 @@
 			(type default)
 		)
 		(uuid "3e4c8e15-926a-4233-afcd-27f96439d0ce")
+	)
+	(wire
+		(pts
+			(xy 40.64 49.53) (xy 52.07 49.53)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3f48e6d5-b0a5-4373-b103-f85fef7057cb")
 	)
 	(wire
 		(pts
@@ -1403,6 +1423,16 @@
 			(type default)
 		)
 		(uuid "f5487226-36e8-44d6-b623-481604878446")
+	)
+	(wire
+		(pts
+			(xy 104.14 50.8) (xy 104.14 49.53)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f620397f-e56c-437e-8ca3-4da553d850a3")
 	)
 	(global_label "IMU_MISO"
 		(shape input)
@@ -2246,6 +2276,84 @@
 	)
 	(symbol
 		(lib_id "power:GND")
+		(at 104.14 50.8 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "55ff681f-b5cf-4235-a366-c225b87d5277")
+		(property "Reference" "#PWR0112"
+			(at 104.14 57.15 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 104.14 55.88 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 104.14 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 104.14 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 104.14 50.8 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "fad5a570-fa51-42da-aa06-2cea0c0ca202")
+		)
+		(instances
+			(project "PTMS_INS"
+				(path "/7abec38e-2a6a-4c7d-a187-5990bacce22b/14bd97d9-f469-494a-875b-9a0a1b57c124"
+					(reference "#PWR0112")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
 		(at 97.79 83.82 0)
 		(unit 1)
 		(body_style 1)
@@ -2353,7 +2461,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 124.46 77.47 0)
 			(hide yes)
 			(show_name no)
@@ -2553,6 +2661,84 @@
 			(project "PTMS_INS"
 				(path "/7abec38e-2a6a-4c7d-a187-5990bacce22b/14bd97d9-f469-494a-875b-9a0a1b57c124"
 					(reference "#PWR035")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 40.64 49.53 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c9496e77-75c2-45d3-84d8-8c153fb3eb6b")
+		(property "Reference" "#PWR0111"
+			(at 40.64 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "GND"
+			(at 40.64 54.61 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 40.64 49.53 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 40.64 49.53 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 40.64 49.53 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "b19a3539-cea4-4410-8b7b-6d6257f87ed1")
+		)
+		(instances
+			(project "PTMS_INS"
+				(path "/7abec38e-2a6a-4c7d-a187-5990bacce22b/14bd97d9-f469-494a-875b-9a0a1b57c124"
+					(reference "#PWR0111")
 					(unit 1)
 				)
 			)
@@ -2901,7 +3087,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 25.4 77.47 0)
 			(hide yes)
 			(show_name no)

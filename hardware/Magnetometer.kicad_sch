@@ -708,6 +708,16 @@
 			(embedded_fonts no)
 		)
 	)
+	(text "NOTE: ADD all predicted addresses\n"
+		(exclude_from_sim no)
+		(at 107.95 96.012 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "15093855-5def-42ef-a02b-90ad0d47350f")
+	)
 	(junction
 		(at 177.8 63.5)
 		(diameter 0)
@@ -719,6 +729,10 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "7e1a4321-e779-4482-a234-0c962d74fe66")
+	)
+	(no_connect
+		(at 119.38 63.5)
+		(uuid "30ad3a87-90b7-45f6-a89e-21c33851f2f7")
 	)
 	(wire
 		(pts
@@ -898,7 +912,7 @@
 			)
 		)
 	)
-	(global_label "MAG_SCK"
+	(global_label "SCK_MAG"
 		(shape input)
 		(at 119.38 68.58 180)
 		(fields_autoplaced yes)
